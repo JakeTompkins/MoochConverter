@@ -72,7 +72,6 @@ class Bot
     message
   end
   
-
   def run
     commented = @r.get("commented") || []
     while true
