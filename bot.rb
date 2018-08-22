@@ -79,7 +79,7 @@ class Bot
   def run
     commented = @r.get("commented") || []
     while true
-        commented = JSON.parse(commented) unless commented.empty?
+        commented = JSON.parse(commented) unless commented.is_a?(Array)
         puts "Searching comments...."
         comments = @session.subreddit('politics').comments
         comments.each do |comment|
