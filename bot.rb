@@ -44,9 +44,6 @@ class Bot
       multiplier = time_phrase.match(/\d+/)[0]
       time_word = time_phrase.sub(multiplier + ' ', '').sub(/s$/, '')
 
-      p multiplier
-      p time_word
-
       mooches = multiplier.to_i * TIME_WORDS[time_word.to_sym]
   end
 
