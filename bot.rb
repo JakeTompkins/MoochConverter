@@ -1,5 +1,6 @@
 require 'redd'
 require 'redis'
+require 'json'
 
 TIME_WORDS = {
     year: 36.5,
@@ -43,6 +44,9 @@ class Bot
       multiplier = time_phrase.match(/\d+/)[0]
       time_word = time_phrase.sub(multiplier + ' ', '').sub(/s$/, '')
 
+      p multiplier
+      p time_word
+
       mooches = multiplier.to_i * TIME_WORDS[time_word.to_sym]
   end
 
@@ -75,6 +79,7 @@ class Bot
   def run
     while true
         commented = @r.get("commented") || []
+        commented = JSON.parse(commented) unless commented.empty?
         puts "Searching comments...."
         comments = @session.subreddit('politics').comments
         comments.each do |comment|
@@ -84,13 +89,15 @@ class Bot
                 unless commented.include?(comment.id) || comment.author.name == "TimeToMooch"
                     comment.reply(message) 
                     commented.push(comment.id)
-                    @r.set("commented", commented)
                     puts "Replied to \n\n#{comment.body} \n\nwith \n\n#{message}"
                 end
             end
         end
         puts "Sleeping for 15 seconds...."
         sleep(15)
+    end
+    at_exit do
+        @r.set("commented", JSON.generate(commented))
     end
   end
 end
